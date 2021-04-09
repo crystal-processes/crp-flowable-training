@@ -41,7 +41,7 @@
 When to use async execution and when don't.
 
 7. Transaction rollback ```org.flowable.engine.test.transactions.TransactionRollbackTest```
-7. @TODO: Use case: async call to external system fails after 3 retries. Try to contact external system n times and after that stop external system calls and stop job handling.
+7. @TODO: Use case: async call to external system fails after 3 retries. Try to contact the external system n times and after that stop external system calls and stop job handling.
 7. Why parallel gateways with several branches can cause optimistic locking exception.
 7. [True parallel service task execution](https://blog.flowable.org/2020/08/06/true-parallel-service-task-execution-with-flowable/)
 

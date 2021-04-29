@@ -12,6 +12,7 @@
  */
 package org.crp.flowable.training;
 
+import org.flowable.engine.HistoryService;
 import org.flowable.engine.RepositoryService;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
@@ -19,6 +20,7 @@ import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.engine.test.Deployment;
 import org.flowable.engine.test.FlowableTest;
 import org.flowable.task.api.Task;
+import org.flowable.variable.api.history.HistoricVariableInstance;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,7 +30,7 @@ public class UnitTest {
 
     @Test
     @Deployment(resources = {"org/crp/flowable/training/my-process.bpmn20.xml"})
-    public void test(RuntimeService runtimeService, TaskService taskService) {
+    void test(RuntimeService runtimeService, TaskService taskService) {
         ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("my-process");
         assertThat(processInstance).isNotNull();
 
@@ -37,7 +39,7 @@ public class UnitTest {
     }
 
     @Test
-    public void deployWithRepositoryService(RuntimeService runtimeService, TaskService taskService, RepositoryService repositoryService) {
+    void deployWithRepositoryService(RuntimeService runtimeService, TaskService taskService, RepositoryService repositoryService) {
         org.flowable.engine.repository.Deployment deployment = repositoryService.createDeployment().addClasspathResource("org/crp/flowable/training/my-process.bpmn20.xml").deploy();
         try {
             test(runtimeService,taskService);
@@ -46,4 +48,14 @@ public class UnitTest {
         }
     }
 
+    @Test
+    @Deployment
+    void setVariableInThrowingNoneEvent(RuntimeService runtimeService, HistoryService historyService) {
+        ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("noneThrowingEventProcess");
+        assertThat(processInstance).isNotNull();
+
+        assertThat(historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstance.getId()).finished().count()).isEqualTo(1L);
+        assertThat(historyService.createHistoricVariableInstanceQuery().processInstanceId(processInstance.getId()).variableName("addedVariable").singleResult()).
+                extracting(HistoricVariableInstance::getValue).isEqualTo("addedVariableValue");
+    }
 }

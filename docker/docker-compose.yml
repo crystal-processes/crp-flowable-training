@@ -1,0 +1,13 @@
+version: '3'
+services:
+  database:
+    image: "postgres" # use latest official postgres version
+    env_file:
+      - database.env # configure postgres
+    ports:
+      - 5432:5432
+
+  flowable-ui:
+    image: "flowable/flowable-ui"
+    ports:
+      - 9080:8080

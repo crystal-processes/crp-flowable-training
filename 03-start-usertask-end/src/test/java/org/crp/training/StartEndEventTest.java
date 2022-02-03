@@ -8,6 +8,7 @@ import org.flowable.engine.RepositoryService;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
 import org.flowable.engine.runtime.ProcessInstance;
+import org.flowable.engine.task.Comment;
 import org.flowable.engine.test.Deployment;
 import org.flowable.spring.impl.test.FlowableSpringExtension;
 import org.flowable.task.api.Task;
@@ -27,7 +28,7 @@ class StartEndEventTest {
 	@Autowired
 	HistoryService historyService;
 	@Autowired
-	RepositoryService repositoryService;
+	TaskService taskService;
 
 	@Test
 	void startToEndEvent() {
@@ -42,6 +43,24 @@ class StartEndEventTest {
 	void userTask() {
 		ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("oneTaskProcess");
 		assertThat(processInstance).isNotNull();
+
+		Task task = taskService.createTaskQuery().processInstanceId(processInstance.getId()).singleResult();
+
+		assertThat(task.getName()).isEqualTo("New task");
+
+		taskService.complete(task.getId());
+		assertThat(runtimeService.createProcessInstanceQuery().processInstanceId(processInstance.getId()).count()).isZero();
 	}
 
+
+	@Test
+	void addCommentToTask() {
+		ProcessInstance processInstance = runtimeService.startProcessInstanceByKey("oneTaskProcess");
+		assertThat(processInstance).isNotNull();
+		Task task = taskService.createTaskQuery().processInstanceId(processInstance.getId()).singleResult();
+
+		taskService.addComment(task.getId(), task.getProcessInstanceId(), "test comment");
+
+		assertThat(taskService.getTaskComments(task.getId())).hasSize(1).extracting(Comment::getFullMessage).containsExactly("test comment");
+	}
 }

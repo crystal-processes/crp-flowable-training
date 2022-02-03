@@ -11,7 +11,7 @@ import net.bytebuddy.implementation.bind.annotation.FieldProxy;
 @SpringBootTest
 @ExtendWith(FlowableSpringExtension.class)
 @ActiveProfiles("test")
-class VacationRequestApplicationTests {
+class TrainingApplicationTests {
 
 	@Test
 	void contextLoads() {

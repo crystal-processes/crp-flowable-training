@@ -29,6 +29,7 @@
         <module>08-signals-and-messages</module>
         <module>09-parsing</module>
         <module>10-behavior-factory</module>
+        <module>11-queries</module>
     </modules>
 
     <build>

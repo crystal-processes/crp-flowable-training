@@ -3,22 +3,14 @@ package org.crp.training;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.List;
 
-import org.flowable.cmmn.spring.impl.test.FlowableCmmnSpringExtension;
 import org.flowable.common.engine.impl.identity.Authentication;
 import org.flowable.common.engine.impl.runtime.Clock;
-import org.flowable.engine.HistoryService;
 import org.flowable.engine.ProcessEngineConfiguration;
-import org.flowable.engine.RepositoryService;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
 import org.flowable.engine.impl.test.JobTestHelper;
-import org.flowable.engine.impl.test.TestHelper;
-import org.flowable.engine.runtime.ProcessInstance;
-import org.flowable.engine.test.Deployment;
-import org.flowable.engine.test.FlowableTestHelper;
 import org.flowable.spring.impl.test.FlowableSpringExtension;
 import org.flowable.task.api.Task;
 import org.junit.jupiter.api.AfterEach;
@@ -38,6 +30,8 @@ class TimersTest {
 	RuntimeService runtimeService;
 	@Autowired
 	TaskService taskService;
+	@Autowired
+	ProcessEngineConfiguration processEngineConfiguration;
 
 	@BeforeEach
 	void login() {
@@ -50,7 +44,7 @@ class TimersTest {
 	}
 
 	@Test
-	void timers(ProcessEngineConfiguration processEngineConfiguration) {
+	void timers() {
 		JobTestHelper.waitForJobExecutorToProcessAllJobsAndTimerJobs(
 				processEngineConfiguration, processEngineConfiguration.getManagementService(), 50_000, 500
 		);
@@ -58,19 +52,34 @@ class TimersTest {
 		assertThat(taskService.createTaskQuery().processDefinitionKey("timersProcess").count()).isEqualTo(3L);
 		List<Task> userTasks = taskService.createTaskQuery().processDefinitionKey("timersProcess").list();
 
-		assertThat(userTasks).extracting( Task::getName).contains( "User task 1", "User task 1", "User task 1");
+		assertThat(userTasks).extracting(Task::getName).contains( "User task 1", "User task 1", "User task 1");
 
-		taskService.complete(userTasks.get(0).getId());
+		Task taskToContinueWith = userTasks.get(0);
+		taskService.complete(taskToContinueWith.getId());
 
+		moveClock2HForward();
+		JobTestHelper.waitForJobExecutorOnCondition(processEngineConfiguration, 10_000, 500,
+				() -> taskService.createTaskQuery().processInstanceId(taskToContinueWith.getProcessInstanceId()).taskName("User task 2").count() == 1L);
+
+		Task secondTask = taskService.createTaskQuery().processInstanceId(taskToContinueWith.getProcessInstanceId()).singleResult();
+		assertThat(secondTask.getName()).isEqualTo("User task 2");
+
+		moveClock2HForward();
+		JobTestHelper.waitForJobExecutorToProcessAllJobsAndTimerJobs(
+				processEngineConfiguration, processEngineConfiguration.getManagementService(), 10_000, 500
+		);
+		Task escalationTask = taskService.createTaskQuery().processInstanceId(taskToContinueWith.getProcessInstanceId()).singleResult();
+		assertThat(escalationTask.getName()).isEqualTo("Escalation");
+		taskService.complete(escalationTask.getId());
+
+		assertThat(runtimeService.createProcessInstanceQuery().processInstanceId(taskToContinueWith.getId()).count()).isEqualTo(0L);
+	}
+
+	private void moveClock2HForward() {
 		Clock clock = processEngineConfiguration.getClock();
 		Calendar currentCalendar = clock.getCurrentCalendar();
 		currentCalendar.add(Calendar.HOUR, 2);
 		clock.setCurrentCalendar(currentCalendar);
-		JobTestHelper.waitForJobExecutorToProcessAllJobsAndTimerJobs(
-				processEngineConfiguration, processEngineConfiguration.getManagementService(), 10_000, 500
-		);
-
-		assertThat(runtimeService.createProcessInstanceQuery().processInstanceId(userTasks.get(0).getId()).count()).isEqualTo(0L);
 	}
 
 }

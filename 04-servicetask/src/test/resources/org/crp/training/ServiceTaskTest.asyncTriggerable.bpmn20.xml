@@ -6,16 +6,15 @@
     xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema"
     expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.flowable.org/test">
 
-    <process id="my-process">
+    <process id="wait-triggerable-process">
 
         <startEvent id="start"/>
-        <sequenceFlow id="flow1" sourceRef="start" targetRef="userTask1"/>
+        <sequenceFlow id="flow1" sourceRef="start" targetRef="triggerableServiceTask"/>
 
-        <userTask id="userTask1" name="Flowable is awesome!"/>
-        <sequenceFlow id="flow2" sourceRef="userTask1" targetRef="userTask2"/>
-        <userTask id="userTask2" name="User task 2" flowable:async="true"/>
+        <serviceTask id="triggerableServiceTask" name="Triggreable service task" flowable:class="org.crp.training.delegate.ReceiveAndWaitJavaDelegate"
+                     flowable:triggerable="true" flowable:async="true" flowable:exclusive="true"/>
 
-        <sequenceFlow id="flow3" sourceRef="userTask2" targetRef="end"/>
+        <sequenceFlow id="flow2" sourceRef="triggerableServiceTask" targetRef="end"/>
         <endEvent id="end"/>
 
     </process>

@@ -30,6 +30,7 @@
         <module>09-parsing</module>
         <module>10-behavior-factory</module>
         <module>11-queries</module>
+        <module>12-migration</module>
     </modules>
 
     <build>

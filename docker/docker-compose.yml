@@ -9,5 +9,10 @@ services:
 
   flowable-ui:
     image: "flowable/flowable-ui"
+    depends_on:
+      - "database"
+    env_file:
+      - flowable.env # configure flowable
+    entrypoint: ["./wait-for-something.sh", "database", "5432", "PostgreSQL", "/flowable-entrypoint.sh"]
     ports:
       - 9080:8080

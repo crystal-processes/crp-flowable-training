@@ -15,8 +15,8 @@ package org.crp.training;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import org.flowable.engine.runtime.ProcessInstance;
-import org.flowable.engine.test.FlowableRule;
 import org.flowable.engine.test.Deployment;
+import org.flowable.engine.test.FlowableRule;
 import org.flowable.task.api.Task;
 import org.junit.Rule;
 import org.junit.Test;
@@ -34,6 +34,9 @@ public class MyUnitTest {
 
         Task task = flowableRule.getTaskService().createTaskQuery().singleResult();
         assertThat(task.getName()).isEqualTo("Flowable is awesome!");
+
+        flowableRule.getTaskService().complete(task.getId());
+        assertThat(flowableRule.getRuntimeService().createProcessInstanceQuery().processInstanceId(processInstance.getId()).count()).isZero();
     }
 
 }

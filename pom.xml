@@ -19,8 +19,9 @@
 
     <modules>
         <module>01-project/01-first-app</module>
-        <module>01-project/01-springboot-app</module>
-        <module>02-test</module>
+        <module>01-project/02-spring-boot-app</module>
+        <module>02-test/01-spring-boot-test</module>
+        <module>02-test/02-sonarqube-test-coverage</module>
         <module>03-start-usertask-end</module>
         <module>04-servicetask</module>
         <module>05-gateways</module>

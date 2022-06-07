@@ -2,8 +2,6 @@ package org.crp.training;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.flowable.cmmn.spring.impl.test.FlowableCmmnSpringExtension;
-import org.flowable.engine.RepositoryService;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.TaskService;
 import org.flowable.engine.runtime.ProcessInstance;

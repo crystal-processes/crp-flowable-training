@@ -5,13 +5,13 @@
 	<parent>
 		<artifactId>crp-flowable-training</artifactId>
 		<groupId>org.crp.training</groupId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.0.0</version>
 		<relativePath>../..</relativePath>
 	</parent>
 
 	<groupId>org.crp.training</groupId>
 	<artifactId>06-listeners</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 	<name>06-listeners</name>
 	<description>Flowable training project</description>
 	<properties>

@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.crp.training</groupId>
 	<artifactId>01.01-first-app</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<version>1.0.0</version>
 
 	<parent>
 		<artifactId>crp-flowable-training</artifactId>
 		<groupId>org.crp.training</groupId>
-		<version>1.0-SNAPSHOT</version>
+		<version>1.0.0</version>
 		<relativePath>../..</relativePath>
 	</parent>
 
